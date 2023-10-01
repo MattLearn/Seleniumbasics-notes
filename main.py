@@ -31,13 +31,31 @@ try:
     time.sleep(1)
 finally:
     driver.close()
+    driver.quit() # ends session
+    
 # --------------------------------------------------------------------
+
+# Pulling and displaying the events off the event page of the official python website
+firefox_opt = Options()
+firefox_opt.add_argument("--headless") # The current process for running headless mode(for firefox) in selenium
+driver = webdriver.Firefox(options=firefox_opt)
 try:
-    firefox = Options()
-    firefox.add_argument('-headless')  # Based off of the deprecated warning this is the current accepted method
-    driver = webdriver.Firefox(options=firefox)
-    driver.get("https://www.pythonbasics.org")  # Load web URL
-    print(driver.page_source)  # display page html
-    time.sleep(1)
+    driver.get("https://www.python.org/events/")
+    header = driver.find_element(By.XPATH, '//*[@id="content"]/div/section/div/div/h2')
+    dates = driver.find_elements(By.TAG_NAME, 'time')
+    date_list = [date.text for date in dates]
+    events = driver.find_elements(By.CLASS_NAME, 'event-title')
+    event_list = [event.text for event in events]
+    locations = driver.find_elements(By.CLASS_NAME, 'event-location')
+    location_list = [location.text for location in locations]
+    # print(header.text)
+
+    print(f"{header.text}\n")
+    for index, event in enumerate(event_list):
+        print(f"{event}:{date_list[index]}\n{location_list[index]}\n")
+
 finally:
-    driver.quit()  # closes window, ends the session
+    driver.close()
+    driver.quit()
+
+
